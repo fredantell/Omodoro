@@ -1,0 +1,11 @@
+*~
+
+/classes/
+/out/
+/target/
+
+build/Release
+
+node_modules
+
+node-webkit.app/
