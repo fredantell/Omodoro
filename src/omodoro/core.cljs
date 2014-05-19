@@ -29,9 +29,16 @@
      om/IDidMount
      (did-mount [this]
        (om/set-state! owner :interval (tick! app-state)))
-     om/IRender
-     (render [this]
-       (countdown (:seconds app-state)))))
+     om/IRenderState
+     (render-state [this {:keys [interval]}]
+       (dom/div nil
+         (dom/button #js {:onClick
+                          (fn [e]
+                            (js/clearInterval interval)
+                            (om/update! app-state :seconds (* 25 60))
+                            (om/set-state! owner :interval (tick! app-state)))}
+                     "reset")
+         (countdown (:seconds app-state))))))
  state
  {:target (. js/document (getElementById "root"))})
 
