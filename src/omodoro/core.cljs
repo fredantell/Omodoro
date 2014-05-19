@@ -15,9 +15,9 @@
     (dom/p nil (str minutes ":" seconds))))
 
 (defn tick! [data]
-  (letfn [(tick-once! []
-            (when-not (zero? (:seconds @data))
-              (om/transact! data :seconds dec)))]
+  (let [tick-once! (fn []
+                     (when-not (zero? (:seconds @data))
+                       (om/transact! data :seconds dec)))]
     (js/setInterval tick-once! 1000)))
 
 (om/root
