@@ -7,13 +7,6 @@
 
 (enable-console-print!)
 
-(defn tick [ms f]
-  (go (loop [then (+ ms (.now js/Date))]
-        (let [now (.now js/Date)]
-          (<! (timeout (- then now)))
-          (when (f)
-            (recur (+ ms then)))))))
-
 (def state (atom {:seconds (* 25 60)}))
 
 (defn countdown [seconds]
@@ -21,14 +14,21 @@
         seconds (rem seconds 60)]
     (dom/p nil (str minutes ":" seconds))))
 
+(defn tick! [data]
+  (letfn [(tick-once! []
+            (when-not (zero? (:seconds @data))
+              (om/transact! data :seconds dec)))]
+    (js/setInterval tick-once! 1000)))
+
 (om/root
  (fn [app-state owner]
    (reify
-     om/IWillMount
-     (will-mount [this]
-       (go (tick 1000 (fn []
-                        (when-not (zero? (:seconds @app-state))
-                          (om/transact! app-state :seconds dec))))))
+     om/IInitState
+     (init-state [this]
+       {:interval nil})
+     om/IDidMount
+     (did-mount [this]
+       (om/set-state! owner :interval (tick! app-state)))
      om/IRender
      (render [this]
        (countdown (:seconds app-state)))))
