@@ -16,13 +16,10 @@
 
 (def state (atom {:seconds (* 25 60)}))
 
-(defn countdown [data owner]
-  (reify
-    om/IRender
-    (render [this]
-      (let [minutes (int (/ (:seconds data) 60))
-            seconds (rem (:seconds data) 60)]
-        (dom/p nil (str minutes ":" seconds))))))
+(defn countdown [seconds]
+  (let [minutes (int (/ seconds 60))
+        seconds (rem seconds 60)]
+    (dom/p nil (str minutes ":" seconds))))
 
 (om/root
  (fn [app-state owner]
@@ -34,7 +31,7 @@
                           (om/transact! app-state :seconds dec))))))
      om/IRender
      (render [this]
-       (om/build countdown app-state))))
+       (countdown (:seconds app-state)))))
  state
  {:target (. js/document (getElementById "root"))})
 
