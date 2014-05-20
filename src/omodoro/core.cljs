@@ -15,10 +15,15 @@
                        (om/transact! data :seconds dec)))]
     (js/setInterval tick-once! 1000)))
 
+(defn pad [n]
+  (if (<= 0 n 9)
+    (str "0" n)
+    (str n)))
+
 (defn clock [seconds]
   (let [minutes (int (/ seconds 60))
         seconds (rem seconds 60)]
-    (dom/p nil (str minutes ":" seconds))))
+    (dom/p nil (str (pad minutes) ":" (pad seconds)))))
 
 (om/root
  (fn [app-state owner]
