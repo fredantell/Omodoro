@@ -9,16 +9,16 @@
 
 (def state (atom {:seconds (* 25 60)}))
 
-(defn countdown [seconds]
-  (let [minutes (int (/ seconds 60))
-        seconds (rem seconds 60)]
-    (dom/p nil (str minutes ":" seconds))))
-
 (defn tick! [data]
   (let [tick-once! (fn []
                      (when-not (zero? (:seconds @data))
                        (om/transact! data :seconds dec)))]
     (js/setInterval tick-once! 1000)))
+
+(defn clock [seconds]
+  (let [minutes (int (/ seconds 60))
+        seconds (rem seconds 60)]
+    (dom/p nil (str minutes ":" seconds))))
 
 (om/root
  (fn [app-state owner]
@@ -38,7 +38,7 @@
                             (om/update! app-state :seconds (* 25 60))
                             (om/set-state! owner :interval (tick! app-state)))}
                      "reset")
-         (countdown (:seconds app-state))))))
+         (clock (:seconds app-state))))))
  state
  {:target (. js/document (getElementById "root"))})
 
