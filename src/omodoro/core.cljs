@@ -23,7 +23,8 @@
 (defn clock [seconds]
   (let [minutes (int (/ seconds 60))
         seconds (rem seconds 60)]
-    (dom/p nil (str (pad minutes) ":" (pad seconds)))))
+    (dom/p #js {:id "clock"}
+           (str (pad minutes) ":" (pad seconds)))))
 
 (om/root
  (fn [app-state owner]
