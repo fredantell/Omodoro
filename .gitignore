@@ -9,3 +9,4 @@ build/Release
 node_modules
 
 node-webkit.app/
+/omodoro.js
