@@ -1,5 +1,4 @@
 (ns omodoro.core
-  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.nodejs :as node]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
