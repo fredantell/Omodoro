@@ -5,7 +5,8 @@
             [om.dom :as dom :include-macros true]
             [cljs.nodejs :as n]
             [omodoro.components.dailycommit :as dc]
-            [omodoro.components.clock :as clock]))
+            [omodoro.components.clock :as clock]
+            [omodoro.components.pomodorometer :as pmtr]))
 
 (enable-console-print!)
 
@@ -14,6 +15,7 @@
 ;; Improve clock widget with hover pausing / proper reset
 ;; Build Timer done widget
 ;; Add ability to play sound
+;; Add component to display day's goal and day's progress
 ;; Start arranging components in a guided workflow
 
 (def gui (n/require "nw.gui"))  ;; kernel_time.core.gui.Window.get().zoomLevel = 2
@@ -27,6 +29,7 @@
     om/IRender
     (render [_]
       (dom/div nil
+               (om/build pmtr/pomodoro-meter app)
                (om/build clock/clock-widget app)
                (om/build dc/commit-widget app)))))
 
