@@ -10,12 +10,17 @@
 (enable-console-print!)
 
 ;; Next steps:
-;; Factor out clock entirely to a component
+;; DONE: Add component to display day's goal and day's progress
+;; Improve clock widget with hover pausing / proper reset
+;; Build Timer done widget
+;; Add ability to play sound
 ;; Start arranging components in a guided workflow
 
 (def gui (n/require "nw.gui"))  ;; kernel_time.core.gui.Window.get().zoomLevel = 2
 (def state (atom {:seconds (* 25 60)
-                  :commitment 4}))
+                  :commitment 4
+                  :completed 1
+                  :current-task nil}))
 
 (defn render-app [app owner opts]
   (reify
