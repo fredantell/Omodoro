@@ -1,11 +1,15 @@
 (ns omodoro.core
   (:require [cljs.nodejs :as node]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]))
+            [om.dom :as dom :include-macros true]
+            [cljs.nodejs :as n]
+            [omodoro.components.dailycommit :as dc]))
 
 (enable-console-print!)
 
-(def state (atom {:seconds (* 25 60)}))
+(def gui (n/require "nw.gui"))  ;; kernel_time.core.gui.Window.get().zoomLevel = 2
+(def state (atom {:seconds (* 25 60)
+                  :commitment 4}))
 
 (defn tick! [data]
   (let [tick-once! (fn []
@@ -23,6 +27,7 @@
         seconds (rem seconds 60)]
     (dom/p #js {:id "clock"}
            (str (pad minutes) ":" (pad seconds)))))
+
 
 (om/root
  (fn [app-state owner]
@@ -42,7 +47,8 @@
                             (om/update! app-state :seconds (* 25 60))
                             (om/set-state! owner :interval (tick! app-state)))}
                      "reset")
-         (clock (:seconds app-state))))))
+         (clock (:seconds app-state))
+         (om/build dc/commit-widget app-state)))))
  state
  {:target (. js/document (getElementById "root"))})
 

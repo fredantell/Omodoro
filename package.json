@@ -2,7 +2,7 @@
     "name": "omodoro",
     "main": "index.html",
     "window": {
-        "toolbar": false,
+        "toolbar": true,
         "frame": false,
         "width": 320,
         "height": 592
