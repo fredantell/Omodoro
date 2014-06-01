@@ -1,7 +1,8 @@
 (ns omodoro.components.clock
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [cljs.core.async :refer [chan <! timeout]]))
+            [cljs.core.async :refer [chan <! >! put! timeout]]))
 
 (defn tick! [data]
   (let [tick-once! (fn []
@@ -30,10 +31,17 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:interval nil})
+      {:interval nil
+       :chan (chan)})
     om/IDidMount
     (did-mount [_]
-      (om/set-state! :interval (tick! app)))
+      (om/set-state! owner :interval (tick! app)))
+    om/IWillMount
+    (will-mount [_]
+      (let [c (om/get-state owner :chan)]
+        (js/console.log c))
+      (go (loop []
+            #_(<! ))))
     om/IRenderState
     (render-state [_ {:keys [interval]}]
       (dom/div nil
