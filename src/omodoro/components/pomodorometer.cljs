@@ -5,8 +5,12 @@
 
 (defn empty-circle []
   (dom/i #js {:className "fa fa-circle-thin fa-3x"}))
+(defn half-circle []
+  (dom/i #js {:className "fa fa-dot-circle-o fa-3x"}))
 (defn filled-circle []
   (dom/i #js {:className "fa fa-circle fa-3x"}))
+
+
 
 (defn pomodoro-meter [app owner opts]
   (reify
@@ -17,7 +21,8 @@
         (dom/div nil
                  (apply dom/div
                         #js {:className "pomodoroMeter"}
-                        (into
-                         (repeatedly num-incomplete-poms empty-circle)
-                         (repeatedly num-completed-poms  filled-circle))))))))
+                        (concat  (repeatedly num-completed-poms  filled-circle)
+                                 (list (half-circle))
+                                 (repeatedly num-incomplete-poms empty-circle)
+                                 )))))))
 
