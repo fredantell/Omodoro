@@ -8,10 +8,51 @@ body {
     background-color: rgb(48,72,95);
     
 }
+#clock-container {
+    height: 115px;
+    width: 260px;
+    margin: 0 30px 0 30px;
+    position: relative;
+}
 #clock {
     font-family: "Helvetica Neue";
-    font-size: 6em;
+    font-size: 96px;
+    line-height: 115px;
     color: white;
     font-weight: 100;
     text-align: center;
 }
+
+.overlay {
+    background: rgba(23,24,27,0.6);
+    border-radius: 5px;
+    text-align: center;
+    width: 101%;
+    height: 101%;
+    position: absolute;
+    -webkit-transition: opacity 0.25s ease;
+    transition: opacity 0.25s ease;
+    opacity: 0;
+}
+.overlay i {
+    text-align: center;
+    line-height: 115px;
+}
+/*
+.overlay div {
+    position: absolute;
+    width: 50%;
+    height: 100px;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+*/
+.overlay:hover {
+    opacity: 0.9;
+}
+
+
+
