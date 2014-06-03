@@ -38,21 +38,7 @@ body {
     text-align: center;
     line-height: 115px;
 }
-/*
-.overlay div {
-    position: absolute;
-    width: 50%;
-    height: 100px;
-    margin: auto;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-}
-*/
-.overlay:hover {
+.overlay:hover, .overlay.show {
     opacity: 0.9;
 }
-
-
 

@@ -26,12 +26,13 @@
 (def state (atom {:app {:seconds (* 25 60)
                         :commitment 4
                         :completed 1
-                        :current-task nil}
+                        :current-task nil
+                        :current-timer-state :new #_(:new :ticking :paused :finished)}
                   :settings {:timer-only? :true
                              :pom-length 25
                              :short-break 5
                              :long-break 30
-                             :ticking? :true}}))
+                             :play-ticking-sound? :true}}))
 
 (defn render-app [app owner opts]
   (reify

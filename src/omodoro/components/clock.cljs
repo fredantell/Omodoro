@@ -21,13 +21,30 @@
     (str "0" n)
     (str n)))
 
-(defn clock [seconds]
+;; store in app state status of clock
+;; if clock is new, then show overlay with play button
+;; if clock is ticking, then hide overlay with pause button
+;; if clock is paused, then show overlay with play button
+;; if clock is finished, then show overlay with reset button
+
+(defn overlay [cts]
+  (let [overlay-markup
+        (fn [overlay-class icon-class]
+          (dom/div #js {:className (str "overlay " overlay-class)}
+                   (dom/i #js {:className (str "fa " icon-class)})))]
+    (condp = cts
+      :new (overlay-markup "show" "fa-play-circle")
+      :ticking (overlay-markup "hide" "fa-pause")
+      :paused (overlay-markup "show" "fa-play-circle")
+      :finished (overlay-markup "show" "fa-history")
+      (js/console.log "Default class: " cts))))
+
+(defn clock [{:keys [seconds current-timer-state]}]
   (let [minutes (int (/ seconds 60))
         seconds (rem seconds 60)]
     (dom/div #js {:id "clock-container"}
       (dom/div #js {:id "clock"}
-        (dom/div #js {:className "overlay"}
-                 (dom/div nil (dom/i #js {:className "fa fa-pause"})))
+        (overlay current-timer-state)
         (str (pad minutes) ":" (pad seconds))
         ))))
 
@@ -56,5 +73,5 @@
     (render-state [_ {:keys [interval]}]
       (dom/div nil
         (reset-button app owner interval)
-        (clock (:seconds app))))))
+        (clock app)))))
 
