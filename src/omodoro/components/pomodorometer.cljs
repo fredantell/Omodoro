@@ -16,13 +16,16 @@
   (reify
     om/IRender
     (render [_]
-      (let [num-completed-poms (:completed app)
-            num-incomplete-poms (- (:commitment app) (:completed app))]
+      (let [poms-committed-to (:commitment app)
+            num-completed-poms (:completed app)
+            pom-in-progress? (some #{:ticking :paused} (list (:current-timer-state app)))
+            num-incomplete-poms (- poms-committed-to num-completed-poms (when pom-in-progress? 1))
+            ]
         (dom/div nil
                  (apply dom/div
                         #js {:className "pomodoroMeter"}
                         (concat  (repeatedly num-completed-poms  filled-circle)
-                                 (list (half-circle))
+                                 (when pom-in-progress? (list (half-circle)))
                                  (repeatedly num-incomplete-poms empty-circle)
                                  )))))))
 
