@@ -5,17 +5,37 @@
             [cljs.core.async :refer [chan <! >! put! timeout]]))
 
 ;; Next Steps:
-;; Control ticking of the clock - start, pause, reset
-;; When clock is finished, set state to :finished, then inc completed pomodoro
+;; Done: Control ticking of the clock - start, pause, reset
+;; Done: When clock is finished, set state to :finished, then inc completed pomodoro
 ;; Done: Add hover play/pause interaction
 ;; Add ability to one off override duration of a cycle
 ;; If the pomodoro is paused for more than 3 minutes then auto reset
 
 (defn tick! [data]
   (let [tick-once! (fn []
-                     (when-not (zero? (:seconds @data))
-                       (om/transact! data :seconds dec)))]
-    (js/setInterval tick-once! 1000)))
+                     (when (and
+                            (= :ticking (:current-timer-state @data))
+                            (< 0 (:seconds @data)))
+                       (om/transact! data :seconds dec)))
+        check-finished! (fn []
+                          (when (and
+                                 (= 0 (:seconds @data))
+                                 (= :ticking (:current-timer-state @data)))
+                              (do
+                                (om/transact! data :completed inc)
+                                (om/update! data :current-timer-state :finished)
+                                ())))
+        reset-time! (fn []
+                      (when (= :new (:current-timer-state @data))
+                        (om/update! data :seconds (* 25 60))))
+        
+        manage-clock! (fn []
+                        (do
+                          (js/console.log "managing clock!!")
+                          (tick-once!)
+                          (check-finished!)
+                          (reset-time!)))]
+    (js/setInterval manage-clock! 1000)))
 
 (defn pad [n]
   (if (<= 0 n 9)
@@ -40,7 +60,7 @@
       :finished (overlay-markup "show" "fa-history")
       (js/console.log "Default class: " cts))))
 
-(defn click-clock [cts]
+(defn click-clock! [cts]
   "Transition the state of the timer when the clock is clicked.
 If the state on the left gets clicked, it should become the state on the right."
   (condp = cts
@@ -55,10 +75,9 @@ If the state on the left gets clicked, it should become the state on the right."
         seconds (rem seconds 60)]
     (dom/div #js {:id "clock-container"}
       (dom/div #js {:id "clock"
-                    :onClick #(om/transact! app :current-timer-state click-clock)}
+                    :onClick #(om/transact! app :current-timer-state click-clock!)}
         (overlay current-timer-state)
-        (str (pad minutes) ":" (pad seconds))
-        ))))
+        (str (pad minutes) ":" (pad seconds))))))
 
 (defn reset-button [app owner interval]
   (dom/button #js {:onClick
@@ -84,6 +103,7 @@ If the state on the left gets clicked, it should become the state on the right."
     om/IRenderState
     (render-state [_ {:keys [interval]}]
       (dom/div nil
-        (reset-button app owner interval)
-        (clock app)))))
+        (clock app)
+        (when (= :paused (:current-timer-state app))
+          (reset-button app owner interval))))))
 
