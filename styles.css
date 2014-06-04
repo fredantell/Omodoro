@@ -42,3 +42,8 @@ body {
     opacity: 0.9;
 }
 
+/* Commit Widget */
+
+.commitButton, .commitButton+h2 {
+    display: inline-block;
+}
