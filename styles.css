@@ -47,3 +47,28 @@ body {
 .commitButton, .commitButton+h2 {
     display: inline-block;
 }
+
+/* Menubar */
+#menubar {
+    position: absolute;
+    bottom: 0;
+    color: #aaa;
+    height: 60px;
+}
+#menubar div {
+    font-size: 48px;
+    float: left;
+    width: 79px;
+    text-align: center;
+    border-right: 1px dashed #555;
+
+}
+#menubar div:hover {
+    color: #eee;
+}
+#menubar div:last-child {
+    border-right: none;
+}
+#menubar div i {
+    line-height: 60px;
+}

@@ -6,7 +6,8 @@
             [cljs.nodejs :as n]
             [omodoro.components.dailycommit :as dc]
             [omodoro.components.clock :as clock]
-            [omodoro.components.pomodorometer :as pmtr]))
+            [omodoro.components.pomodorometer :as pmtr]
+            [omodoro.components.menubar :as mb]))
 
 (enable-console-print!)
 
@@ -43,7 +44,7 @@
         (dom/div nil
                  (om/build clock/clock-widget (:app app))
                  (om/build pmtr/pomodoro-meter (:app app))
-                 (om/build dc/commit-widget (:app app)))
+                 (om/build mb/menubar (:app app)))
         (dom/div nil
                  (om/build dc/commit-widget (:app app)))))))
 
