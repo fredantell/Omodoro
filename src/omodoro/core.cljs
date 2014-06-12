@@ -25,7 +25,7 @@
 
 (def gui (n/require "nw.gui"))  ;; kernel_time.core.gui.Window.get().zoomLevel = 2
 (def state (atom {:app {:seconds (* 25 60)
-                        :committed? false
+                        :committed? true
                         :commitment 4
                         :completed 1
                         :current-task nil
@@ -42,9 +42,12 @@
     (render [_]
       (if (get-in app [:app :committed?])
         (dom/div nil
-                 (om/build clock/clock-widget (:app app))
-                 (om/build pmtr/pomodoro-meter (:app app))
-                 (om/build mb/menubar (:app app)))
+                 (dom/div #js {:id "app-container"}
+                   (om/build clock/clock-widget (:app app))
+                   (om/build dc/commit-widget (:app app))
+                   (om/build pmtr/pomodoro-meter (:app app)))
+                 (dom/div #js {:id "menu-container"}
+                   (om/build mb/menubar (:app app))))
         (dom/div nil
                  (om/build dc/commit-widget (:app app)))))))
 

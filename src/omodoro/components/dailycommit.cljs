@@ -15,7 +15,7 @@
     om/IRender
     (render [_]
       (dom/div nil
-        (dom/h1 nil "Today, I am commiting to")
+        (dom/h2 nil "Today, I am commiting to")
         (dom/div nil
           (dom/i (button-props app "fa-minus-square" "commit-minus" dec))
           (dom/h2 nil (:commitment app))

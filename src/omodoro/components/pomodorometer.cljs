@@ -4,11 +4,11 @@
    [om.dom :as dom :include-macros true]))
 
 (defn empty-circle []
-  (dom/i #js {:className "fa fa-circle-thin fa-3x"}))
+  (dom/i #js {:className "fa fa-circle-thin"}))
 (defn half-circle []
-  (dom/i #js {:className "fa fa-dot-circle-o fa-3x"}))
+  (dom/i #js {:className "fa fa-dot-circle-o"}))
 (defn filled-circle []
-  (dom/i #js {:className "fa fa-circle fa-3x"}))
+  (dom/i #js {:className "fa fa-circle"}))
 
 
 

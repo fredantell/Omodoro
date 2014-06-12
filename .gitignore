@@ -10,3 +10,10 @@ node_modules
 
 node-webkit.app/
 /omodoro.js
+
+build/
+css/animations.css
+css/app.css
+css/font-awesome.css
+.gitignore
+nodewebkit
