@@ -4,6 +4,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.nodejs :as n]
+            [omodoro.routes.intro :as intro]
             [omodoro.components.dailycommit :as dc]
             [omodoro.components.clock :as clock]
             [omodoro.components.pomodorometer :as pmtr]

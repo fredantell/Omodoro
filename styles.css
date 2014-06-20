@@ -3,14 +3,57 @@ html, body {
     height: 460px;
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
 h2 {
     margin: 0;
 }
 body {
     background-color: rgb(48,72,95);
+}
+
+
+/*------------------------------------------------------------
+  Navigation Chevrons
+/*----------------------------------------------------------*/
+.navChevronContainer {
+position: fixed;
+height: 200px;
+width: 320px;
+font-size: 32px;
+top: 216px;
+}
+i.navChevron {
+    opacity: 0.2;
+    transition: all 100ms;
+    line-height: 32px;
+}
+i.navChevron.fa-chevron-left {
+float: left;
+}
+i.navChevron.fa-chevron-right {
+float: right;
+}
+
+i.navChevron:hover {
+    opacity: 1.0
+}
+
+/*------------------------------------------------------------
+  Intro Panel
+/*----------------------------------------------------------*/
+div#intro {
+    width: 1280px;
+    position: absolute;
+    left: 0
+}
+div#intro .panel {
+    float: left;
+    width: 320px;
     
 }
+
+
 #app-container {
     height: 400px;
     position: relative;
