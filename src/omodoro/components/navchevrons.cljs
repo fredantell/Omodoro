@@ -3,29 +3,48 @@
             [om.dom :as dom :include-macros true]))
 
 
-(defn scroll [el magnitude min max]
-  (let [empty (empty?  (.. el -style -left))
+(defn by-id [id]
+  (. js/document (getElementById "intro")))
+
+(defn scroll [id direction]
+  (let [el (by-id id)
+        dir (if (= direction "left") 1 -1)
+        vp-width (.. js/document -documentElement -clientWidth)
+        cont-width (. el -offsetWidth)
+        panels (/ cont-width vp-width)
+        min (* (- panels 1) (* vp-width -1))
+        max 0
+        empty (empty?  (.. el -style -left))
         cur-pos (if empty 0 (.. el -style -left))
-        new-pos-raw (+ (js/parseInt cur-pos) magnitude)
+        new-pos-raw (+ (js/parseInt cur-pos) (* vp-width dir))
         constrain (cond
                    (< new-pos-raw min) min
                    (> new-pos-raw max) max
                    :else new-pos-raw)
         new-pos (str constrain "px")]
-    (js/console.log "min: " max)
+    (js/console.log "min: " max
+                    "\nel: " el
+                    "\nvp-width:" vp-width
+                    "\ncont-width:" cont-width
+                    "\npanels:" panels
+                    "\nmin:" min
+                    "\nmax:" max
+                    "\nempty:" empty
+                    "\ncur-pos:" cur-pos
+                    "\nnew-pos-raw:" new-pos-raw
+                    "\nconstrain:" constrain
+                    "\nnew-pos:" new-pos)
     (aset el "style" "left" new-pos)))
 
-(defn nav-chevrons [num-panels]
-  (let [width 320
-        min (* (- num-panels 1) -320)
-        max 0]
-      (dom/div #js {:className "navChevronContainer"}
-               (dom/i #js {:className (str "navChevron fa fa-chevron-left")
-                           :onClick (fn [e]
-                                      (let [intro (. js/document (getElementById "intro"))]
-                                        (scroll intro width min max)))})
-               (dom/i #js {:className (str "navChevron fa fa-chevron-right")
-                           :onClick (fn [e]
-                                      (let [intro (. js/document (getElementById "intro"))]
-                                        (scroll intro (* -1 width) min max)))})
-               (. js/console log "Hi!"))))
+#_(defn nav-chevrons [el]
+  (dom/div nil "NAV CHEVRONS 4 EVAH!"))
+
+(defn nav-chevrons [container-id]
+  (dom/div #js {:className "navChevronContainer"}
+           (dom/i #js {:className (str "navChevron fa fa-chevron-left")
+                       :onClick (fn [e]
+                                  (scroll container-id "left"))})
+           (dom/i #js {:className (str "navChevron fa fa-chevron-right")
+                       :onClick (fn [e]
+                                  (scroll container-id "right"))})
+           (. js/console log "Hi!")))
