@@ -4,12 +4,14 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.nodejs :as n]
-            [omodoro.routes.intro :as intro]
-            [omodoro.routes.four-oh-four :as fof]
-            [omodoro.components.dailycommit :as dc]
-            [omodoro.components.clock :as clock]
-            [omodoro.components.pomodorometer :as pmtr]
-            [omodoro.components.menubar :as mb]))
+            [omodoro.routes.routes :as routes]
+            [omodoro.routes.timer :as timer]
+            ;;[omodoro.routes.intro :as intro]
+            ;;[omodoro.routes.four-oh-four :as fof]
+            ;; [omodoro.components.dailycommit :as dc]
+            ;; [omodoro.components.clock :as clock]
+            ;; [omodoro.components.pomodorometer :as pmtr]
+            #_[omodoro.components.menubar :as mb]))
 
 (enable-console-print!)
 
@@ -38,6 +40,67 @@
                              :short-break 5
                              :long-break 30
                              :play-ticking-sound? :true}}))
+
+
+
+(defn get-component [state]
+  "Return the function that will be used to render the view"
+  (condp = (:route state)
+    :intro routes/intro
+    :timer routes/timer
+    routes/four-oh-four))
+
+(defn set-route! [state]
+  "Change the route in the atom, which will trigger a re-render"
+  (let [hash (.. js/document -location -hash)]
+    (swap! state assoc :route hash)
+    (js/console.log "new route: " (:route state))))
+
+(defn init-routing []
+  "Listen to changes in the address bar and call set-route!"
+  (js/window.addEventListener "popstate" #(set-route! state)))
+(init-routing)
+
+
+(defn render-app [app owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (let [workflow (:route app)]
+        (dom/div nil
+                 (om/build timer/init app))
+        #_(routes/timer (:app app) owner opts)
+        #_(om/build routes/workflow app)))))
+
+#_(defn render-app [app owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      #_(dom/div nil
+               (om/build intro/init app))
+      (if (get-in app [:app :committed?])
+          (dom/div nil
+                   (dom/div #js {:id "app-container"}
+                            (om/build clock/clock-widget (:app app))
+                            (om/build dc/commit-widget (:app app))
+                            (om/build pmtr/pomodoro-meter (:app app)))
+                   (dom/div #js {:id "menu-container"}
+                            (om/build mb/menubar (:app app))))
+          (dom/div nil
+                   (om/build dc/commit-widget (:app app)))))))
+   
+(om/root
+ render-app
+ state
+ {:target (. js/document (getElementById "root"))})
+
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
   {:clock {:paused? false
@@ -83,42 +146,3 @@
               :ended 1225
               :completed? true
               :interruptions [:task :pause]}]})
-
-(defn get-component [state]
-  (condp = (:route state)
-    :intro intro/intro
-    :timer timer/timer
-    fof/four-oh-four))
-
-(defn set-route! [e state]
-  (let [hash (.. js/document -location -hash)]
-    (. e preventDefault)
-    (swap! state assoc :route hash)
-    (js/console.log "new route: " (:route state))))
-(defn init-routing []
-  (js/window.addEventListener "popstate" #(set-route! % state)))
-(init-routing)
-
-
-(defn render-app [app owner opts]
-  (reify
-    om/IRender
-    (render [_]
-      (dom/div nil
-               (om/build intro/init app))
-      #_(if (get-in app [:app :committed?])
-          (dom/div nil
-                   (dom/div #js {:id "app-container"}
-                            (om/build clock/clock-widget (:app app))
-                            (om/build dc/commit-widget (:app app))
-                            (om/build pmtr/pomodoro-meter (:app app)))
-                   (dom/div #js {:id "menu-container"}
-                            (om/build mb/menubar (:app app))))
-          (dom/div nil
-                   (om/build dc/commit-widget (:app app)))))))
-   
-(om/root
- render-app
- state
- {:target (. js/document (getElementById "root"))})
-
