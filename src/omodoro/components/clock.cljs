@@ -31,7 +31,7 @@
         
         manage-clock! (fn []
                         (do
-                          (js/console.log "managing clock!!")
+                          #_(js/console.log "managing clock!!")
                           (tick-once!)
                           (check-finished!)
                           (reset-time!)))]
@@ -103,6 +103,7 @@ If the state on the left gets clicked, it should become the state on the right."
     om/IRenderState
     (render-state [_ {:keys [interval]}]
       (dom/div nil
+               #_(js/console.log "ClockWidg: " (:current-timer-state app))
         (clock app)
         (when (= :paused (:current-timer-state app))
           (reset-button app owner interval))))))

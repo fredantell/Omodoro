@@ -28,33 +28,53 @@
 ;; 
 
 (def gui (n/require "nw.gui"))  ;; omodoro.core.gui.Window.get().zoomLevel = 2
-(def state (atom {:app {:seconds (* 25 60)
-                        :committed? true
-                        :commitment 4
-                        :completed 1
-                        :current-task nil
-                        :current-timer-state :new #_(:new :ticking :paused :finished)}
-                  :route "intro"
-                  :settings {:timer-only? :true
-                             :pom-length 25
-                             :short-break 5
-                             :long-break 30
-                             :play-ticking-sound? :true}}))
+
+(def state (atom {:app {:clock
+                         {:seconds (* 25 60)
+                            :current-task nil
+                            :current-timer-state :new #_(:new :ticking :paused :finished)
+                            :task-id nil}
+                        :day
+                          {:commitment 4
+                           :completed 1}
+                        :user
+                          {:name "Fredrik"}
+                        :route "#timer"
+                        :settings {:timer-only? :true
+                                    :pom-length 25
+                                    :short-break 5
+                                    :long-break 30
+                                    :play-ticking-sound? :true}}}))
+
+(defn set-defaults! []
+  "Set app state to user specified defaults"
+  (swap! state
+         assoc-in [:app :clock :seconds]
+         (* 60 (get-in @state [:app :settings :pom-length]))))
+
+(set-defaults!)
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Routing
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-component [state]
+(defn get-component [route]
   "Return the function that will be used to render the view"
-  (condp = (:route state)
-    :intro routes/intro
-    :timer routes/timer
+  (js/console.log "get-component fired")
+  (let [routes {"#intro" routes/intro
+                "#timer" routes/timer}]
+    (get routes route routes/four-oh-four))
+  #_(condp = route
+    "#intro" routes/intro
+    "#timer" routes/timer
     routes/four-oh-four))
 
 (defn set-route! [state]
-  "Change the route in the atom, which will trigger a re-render"
+  "Update the route in the atom, which will trigger a re-render"
   (let [hash (.. js/document -location -hash)]
-    (swap! state assoc :route hash)
-    (js/console.log "new route: " (:route state))))
+    (swap! state assoc-in [:app :route] hash)
+    (js/console.log "new route: " (get-in @state [:app :route]))))
 
 (defn init-routing []
   "Listen to changes in the address bar and call set-route!"
@@ -66,28 +86,15 @@
   (reify
     om/IRender
     (render [_]
-      (let [workflow (:route app)]
+      (let [comp-to-render (get-component (get-in app [:app :route] app))]
         (dom/div nil
-                 (om/build timer/init app))
-        #_(routes/timer (:app app) owner opts)
-        #_(om/build routes/workflow app)))))
+          #_(js/console.log (:app app))
+          #_(om/build timer/init (:app app)))
+          #_(routes/timer (:app app) owner opts)
+          #_(routes/timer (:app app))
+          (comp-to-render (:app app))
+          ))))
 
-#_(defn render-app [app owner opts]
-  (reify
-    om/IRender
-    (render [_]
-      #_(dom/div nil
-               (om/build intro/init app))
-      (if (get-in app [:app :committed?])
-          (dom/div nil
-                   (dom/div #js {:id "app-container"}
-                            (om/build clock/clock-widget (:app app))
-                            (om/build dc/commit-widget (:app app))
-                            (om/build pmtr/pomodoro-meter (:app app)))
-                   (dom/div #js {:id "menu-container"}
-                            (om/build mb/menubar (:app app))))
-          (dom/div nil
-                   (om/build dc/commit-widget (:app app)))))))
    
 (om/root
  render-app
