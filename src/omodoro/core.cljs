@@ -64,7 +64,7 @@
   (js/console.log "get-component fired")
   (let [routes {"#intro" routes/intro
                 "#timer" routes/timer}]
-    (get routes route routes/four-oh-four))
+    (get routes route routes/intro))
   #_(condp = route
     "#intro" routes/intro
     "#timer" routes/timer
@@ -76,11 +76,22 @@
     (swap! state assoc-in [:app :route] hash)
     (js/console.log "new route: " (get-in @state [:app :route]))))
 
+(defn init-window-hash! []
+  "Set the initial window hash to app-state's value on initial load"
+  (js/console.log "init window hash")
+  (aset (.. js/document -location) "hash" (get-in @state [:app :route] "#default")))
+
 (defn init-routing []
   "Listen to changes in the address bar and call set-route!"
   (js/window.addEventListener "popstate" #(set-route! state)))
+
+(init-window-hash!)
 (init-routing)
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Main Render Functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn render-app [app owner opts]
   (reify
@@ -95,7 +106,6 @@
           (comp-to-render (:app app))
           ))))
 
-   
 (om/root
  render-app
  state
