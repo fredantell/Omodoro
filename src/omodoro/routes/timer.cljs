@@ -7,11 +7,20 @@
             [omodoro.components.pomodorometer :as pmtr]
             [omodoro.components.menubar :as mb]))
 
+(defn timer-styles [clock-state]
+  (let [task-id (:task-id clock-state)
+        break? (= task-id :break)
+        break-styles #js {:style
+                          #js {:background-color "rgb(48,72,95)"}}
+        work-styles #js {:style
+                         #js {:background-color "rgb(252,44,30)"}}]
+    (if break? break-styles work-styles)))
+
 (defn init [app owner opts]
   (reify
     om/IRender
     (render [_]
-      (dom/div nil
+      (dom/div (timer-styles (:clock app))
                #_(js/console.log "Timer Init:" app #_(:current-timer-state app))
                (dom/div #js {:id "app-container"}
                         (om/build clock/clock-widget (:clock app))
