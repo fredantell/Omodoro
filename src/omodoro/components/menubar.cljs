@@ -6,22 +6,21 @@
    [om.core :as om :include-macros true]
    [om.dom :as dom :include-macros true]))
 
-(def menu-items
-  [""])
-(defn menu-item [id fa-icon]
+(defn menu-item [route id fa-icon]
   (dom/div nil
           (dom/i #js {:id id
-                      :className (str "navItem fa " fa-icon)})))
+                      :className (str "navItem fa " fa-icon)
+                      :onClick #(aset js/window "location" "hash" route)})))
 
 (defn menubar [app owner opts]
   (reify
     om/IRender
     (render [_]
       (dom/nav #js {:id "menubar"}
-               (menu-item "plan" "fa-pencil-square-o")
-               (menu-item "work" "fa-clock-o")
-               (menu-item "review" "fa-bar-chart-o")
-               (menu-item "settings" "fa-cog")))))
+               (menu-item "#planning" "plan" "fa-pencil-square-o")
+               (menu-item "#timer" "work" "fa-clock-o")
+               (menu-item "#analytics" "review" "fa-bar-chart-o")
+               (menu-item "#settings" "settings" "fa-cog")))))
 
 ;; Possible fa icons for navbar
 ;; fa-clock-o
