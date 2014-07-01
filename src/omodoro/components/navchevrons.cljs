@@ -22,7 +22,7 @@
                    (> new-pos-raw max) max
                    :else new-pos-raw)
         new-pos (str constrain "px")]
-    (js/console.log "min: " max
+    #_(js/console.log "min: " max
                     "\nel: " el
                     "\nvp-width:" vp-width
                     "\ncont-width:" cont-width
@@ -35,9 +35,6 @@
                     "\nconstrain:" constrain
                     "\nnew-pos:" new-pos)
     (aset el "style" "left" new-pos)))
-
-#_(defn nav-chevrons [el]
-  (dom/div nil "NAV CHEVRONS 4 EVAH!"))
 
 (defn nav-chevrons [container-id]
   (dom/div #js {:className "navChevronContainer"}

@@ -24,5 +24,3 @@
         (dom/button #js {:onClick (fn [e]
                                     (om/update! app :committed? true))}
                     "COMMIT!")))))
-
-         (dom/i #js {:className (str "fa " icon-class)})
