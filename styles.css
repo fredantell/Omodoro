@@ -8,9 +8,11 @@ html, body {
 h2 {
     margin: 0;
 }
-body {
+/* --set this programmatically by deriving it from app state
+  body {
     background-color: rgb(48,72,95);
 }
+*/
 
 
 /*------------------------------------------------------------
@@ -39,8 +41,8 @@ i.navChevron:hover {
     opacity: 1.0
 }
 
-/*------------------------------------------------------------
-  Intro Panel
+/*----------------------------------------------------------*/
+/*  Intro Panel
 /*----------------------------------------------------------*/
 div#intro {
     width: 1280px;
@@ -53,6 +55,17 @@ div#intro .panel {
     
 }
 
+/*----------------------------------------------------------*/
+/*  Intro Panel
+/*----------------------------------------------------------*/
+
+/*----------------------------------------------------------*/
+/*  Intro Panel
+/*----------------------------------------------------------*/
+
+/*----------------------------------------------------------*/
+/*  Timer Workflow
+/*----------------------------------------------------------*/
 
 #app-container {
     height: 400px;
@@ -95,13 +108,91 @@ div#intro .panel {
     opacity: 0.9;
 }
 
-/* Commit Widget */
+/*----------------------------------------------------------*/
+/*  Timer Pause/Unpause Buttons                             */
+
+.timerBtnContainer {
+    margin: 0 27px;
+    height: 42px;
+    overflow: hidden;
+    position: relative;
+    bottom: -175px;
+}
+.timerBtn {
+      font-family: helvetica;
+    font-size: 22px;
+    color: white;
+    background-color: rgb(225, 0, 0);
+    text-align: center;
+    border-radius: 3px;
+    padding: 8px 0px;
+    margin: 1px;
+}
+div#pause-btn {
+  position: absolute;
+  width: 100%;
+
+  transition: opacity 200ms, z-index 200ms;
+  transition-delay: 200ms;
+  transition-timing-function: linear, step-end;
+  opacity: 1;
+  z-index: 10;
+
+}
+div#reset-btn {
+    float: left;
+    width: 49%;
+
+    transition: opacity 200ms, z-index 200ms;
+    transition-timing-function: linear, step-end;
+    z-index: -10;
+    opacity: 0;
+}
+div#resume-btn {
+    float: left;
+    width: 49%;
+
+    transition: opacity 200ms, z-index 200ms;
+    transition-timing-function: linear, step-end;
+    z-index: -10;
+    opacity: 0;
+}
+.timerBtnContainer.timerPaused {
+
+}
+.timerBtnContainer.timerPaused #pause-btn {
+    transition: opacity 200ms, z-index 200ms;
+    transition-timing-function: linear, step-end;
+    opacity: 0;
+    z-index: -10;
+}
+.timerBtnContainer.timerPaused #resume-btn {
+    transition: opacity 200ms, z-index 200ms;
+  transition-delay: 200ms;
+    transition-timing-function: linear, step-end;
+    z-index: 0;
+    opacity: 1;
+}
+.timerBtnContainer.timerPaused #reset-btn {
+    transition: opacity 200ms, z-index 200ms;
+    transition-delay: 200ms;
+    transition-timing-function: linear, step-end;
+    z-index: 0;
+    opacity: 1;
+}
+
+/*----------------------------------------------------------*/
+/*  Commit Widget
+/*----------------------------------------------------------*/
 
 .commitButton, .commitButton+h2 {
     display: inline-block;
 }
 
-/* Pomodoro Meter */
+/*----------------------------------------------------------*/
+/*  Pomodoro Meter
+/*----------------------------------------------------------*/
+
 div.pomodoroMeter {
     width: 100%;
     position: absolute;
@@ -118,8 +209,10 @@ div.pomodoroMeter i:nth-child(n+2) {
 
 }
 
+/*----------------------------------------------------------*/
+/*  Menubar
+/*----------------------------------------------------------*/
 
-/* Menubar */
 #menubar {
     position: absolute;
     bottom: 0;

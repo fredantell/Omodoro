@@ -23,8 +23,7 @@
                                  (= :ticking (:current-timer-state @data)))
                               (do
                                 (om/transact! data :completed inc)
-                                (om/update! data :current-timer-state :finished)
-                                ())))
+                                (om/update! data :current-timer-state :finished))))
         reset-time! (fn []
                       (when (= :new (:current-timer-state @data))
                         (om/update! data :seconds (* 25 60))))
@@ -79,32 +78,44 @@ If the state on the left gets clicked, it should become the state on the right."
         (overlay current-timer-state)
         (str (pad minutes) ":" (pad seconds))))))
 
-(defn reset-button [app owner interval]
+(defn reset-button [app owner]
   (dom/button #js {:onClick
                    (fn [e]
                      (om/update! app :seconds (* 25 60)))}
               "reset"))
 
+(defn task-info [app]
+  (let [display-task? (if (= nil (:task-id app)) "none" "block")]
+    (dom/div #js {:style #js {:display display-task?}}
+             "This is task info")))
+
+(defn pause-resume-reset-btns [app]
+  (let [classname (if (= :paused (:current-timer-state app)) "timerPaused" "")
+        change-cts-to #(om/update! app :current-timer-state %)]
+    (dom/div #js {:className (str "timerBtnContainer " classname)}
+             (dom/div #js {:className "timerBtn" :id "pause-btn"
+                           :onClick #(change-cts-to :paused)} "PAUSE")
+             (dom/div #js {:className "timerBtn" :id "resume-btn"
+                           :onClick #(change-cts-to :ticking)} "RESUME")
+             (dom/div #js {:className "timerBtn" :id "reset-btn"
+                           :onClick #(change-cts-to :new)} "RESET"))))
+
 (defn clock-widget [app owner opts]
   (reify
-    om/IInitState
-    (init-state [_]
-      {:interval nil
-       :chan (chan)})
     om/IDidMount
     (did-mount [_]
-      (om/set-state! owner :interval (tick! app)))
-    om/IWillMount
-    (will-mount [_]
-      (let [c (om/get-state owner :chan)]
-        (js/console.log c))
-      (go (loop []
-            #_(<! ))))
-    om/IRenderState
-    (render-state [_ {:keys [interval]}]
+      (when (= nil (:interval app))
+        (om/update! app :interval (tick! app))))
+    om/IRender
+    (render [_]
       (dom/div nil
-               #_(js/console.log "ClockWidg: " (:current-timer-state app))
         (clock app)
-        (when (= :paused (:current-timer-state app))
-          (reset-button app owner interval))))))
+        (dom/div #js {:className "taskInfo" })
+
+        (js/console.log (get-in app [:current-timer-state]))
+
+        (when (and
+               #_(= :ticking (:current-timer-state app))
+               (not= :new (:current-timer-state app)))
+          (pause-resume-reset-btns app))))))
 
