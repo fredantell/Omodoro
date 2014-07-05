@@ -30,10 +30,11 @@
 (def gui (n/require "nw.gui"))  ;; omodoro.core.gui.Window.get().zoomLevel = 2
 
 (def state (atom {:app {:clock
-                         {:seconds (* 25 60)
-                            :current-task nil
-                            :current-timer-state :new #_(:new :ticking :paused :finished)
-                            :task-id nil}
+                          {:seconds (* 25 60)
+                           :current-task nil
+                           :current-timer-state :new #_(:new :ticking :paused :finished)
+                           :task-id nil
+                           :interval nil}
                         :day
                           {:commitment 4
                            :completed 1}
@@ -54,21 +55,18 @@
 
 (set-defaults!)
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Routing
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn get-component [route]
   "Return the function that will be used to render the view"
-  (js/console.log "get-component fired")
   (let [routes {"#intro" routes/intro
-                "#timer" routes/timer}]
-    (get routes route routes/intro))
-  #_(condp = route
-    "#intro" routes/intro
-    "#timer" routes/timer
-    routes/four-oh-four))
+                "#timer" routes/timer
+                "#planning" routes/planning
+                "#settings" routes/settings
+                "#analytics" routes/analytics}]
+    (get routes route routes/four-oh-four)))
 
 (defn set-route! [state]
   "Update the route in the atom, which will trigger a re-render"
@@ -78,8 +76,7 @@
 
 (defn init-window-hash! []
   "Set the initial window hash to app-state's value on initial load"
-  (js/console.log "init window hash")
-  (aset (.. js/document -location) "hash" (get-in @state [:app :route] "#default")))
+  (aset (.. js/document -location) "hash" (get-in @state [:app :route] "#timer")))
 
 (defn init-routing []
   "Listen to changes in the address bar and call set-route!"
@@ -88,6 +85,12 @@
 (init-window-hash!)
 (init-routing)
 
+
+;; (aget js/window "location" "hash")
+;; (aset js/window "location" "hash" "#timer")
+;; (aset js/window "location" "hash" "#planning")
+;; (js/console.log  (get-in @state [:app :route]))
+(js/console.log "hi from repl")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Main Render Functions
@@ -98,13 +101,7 @@
     om/IRender
     (render [_]
       (let [comp-to-render (get-component (get-in app [:app :route] app))]
-        (dom/div nil
-          #_(js/console.log (:app app))
-          #_(om/build timer/init (:app app)))
-          #_(routes/timer (:app app) owner opts)
-          #_(routes/timer (:app app))
-          (comp-to-render (:app app))
-          ))))
+        (comp-to-render (:app app))))))
 
 (om/root
  render-app

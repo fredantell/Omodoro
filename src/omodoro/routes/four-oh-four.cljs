@@ -8,7 +8,7 @@
     (render [_]
       (dom/div nil "Page not found"))))
 
-(defn init []
+(defn init [app]
   (reify
     om/IRender
     (render [_]
