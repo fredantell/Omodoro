@@ -11,22 +11,22 @@
 ;; Add ability to one off override duration of a cycle
 ;; If the pomodoro is paused for more than 3 minutes then auto reset
 
-(defn tick! [data]
+(defn tick! [{:keys [clock settings day]}]
   (let [tick-once! (fn []
                      (when (and
-                            (= :ticking (:current-timer-state @data))
-                            (< 0 (:seconds @data)))
-                       (om/transact! data :seconds dec)))
+                            (= :ticking (:current-timer-state @clock))
+                            (< 0 (:seconds @clock)))
+                       (om/transact! clock :seconds dec)))
         check-finished! (fn []
                           (when (and
-                                 (= 0 (:seconds @data))
-                                 (= :ticking (:current-timer-state @data)))
+                                 (= 0 (:seconds @clock))
+                                 (= :ticking (:current-timer-state @clock)))
                               (do
-                                (om/transact! data :completed inc)
-                                (om/update! data :current-timer-state :finished))))
+                                (om/transact! day :completed inc)
+                                (om/update! clock :current-timer-state :finished))))
         reset-time! (fn []
-                      (when (= :new (:current-timer-state @data))
-                        (om/update! data :seconds (* 25 60))))
+                      (when (= :new (:current-timer-state @clock))
+                        (om/update! clock :seconds  (* (:pom-length @settings) 60))))
         
         manage-clock! (fn []
                         (do
@@ -69,7 +69,7 @@ If the state on the left gets clicked, it should become the state on the right."
     :finished :new
     (js/console.log "Click-clock cts: " cts)))
 
-(defn clock [{:keys [seconds current-timer-state] :as app}]
+(defn display-clock [{:keys [seconds current-timer-state] :as app}]
   (let [minutes (int (/ seconds 60))
         seconds (rem seconds 60)]
     (dom/div #js {:id "clock-container"}
@@ -100,22 +100,20 @@ If the state on the left gets clicked, it should become the state on the right."
              (dom/div #js {:className "timerBtn" :id "reset-btn"
                            :onClick #(change-cts-to :new)} "RESET"))))
 
-(defn clock-widget [app owner opts]
+(defn clock-widget [{:keys [clock settings day] :as app} owner opts]
   (reify
     om/IDidMount
     (did-mount [_]
-      (when (= nil (:interval app))
-        (om/update! app :interval (tick! app))))
+      (when (= nil (:interval clock))
+        (om/update! clock :interval (tick! app))))
     om/IRender
     (render [_]
       (dom/div nil
-        (clock app)
+        (display-clock clock)
         (dom/div #js {:className "taskInfo" })
 
-        (js/console.log (get-in app [:current-timer-state]))
-
         (when (and
-               #_(= :ticking (:current-timer-state app))
-               (not= :new (:current-timer-state app)))
-          (pause-resume-reset-btns app))))))
+               (not= :finished (:current-timer-state clock))
+               (not= :new (:current-timer-state clock)))
+          (pause-resume-reset-btns clock))))))
 

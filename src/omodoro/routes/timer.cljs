@@ -23,7 +23,10 @@
       (dom/div (timer-styles (:clock app))
                #_(js/console.log "Timer Init:" app #_(:current-timer-state app))
                (dom/div #js {:id "app-container"}
-                        (om/build clock/clock-widget (:clock app))
-                        (om/build pmtr/pomodoro-meter (:day app)))
+                        (om/build clock/clock-widget {:clock (:clock app)
+                                                      :day (:day app)
+                                                      :settings (:settings app)})
+                        (om/build pmtr/pomodoro-meter {:clock (:clock app)
+                                                      :day (:day app)}))
                (dom/div #js {:id "menu-container"}
                         (om/build mb/menubar (:app app)))))))

@@ -12,20 +12,18 @@
 
 
 
-(defn pomodoro-meter [app owner opts]
+(defn pomodoro-meter [{:keys [clock day]} owner opts]
   (reify
     om/IRender
     (render [_]
-      (let [poms-committed-to (:commitment app)
-            num-completed-poms (:completed app)
-            pom-in-progress? (some #{:ticking :paused} (list (:current-timer-state app)))
-            num-incomplete-poms (- poms-committed-to num-completed-poms (when pom-in-progress? 1))
-            ]
+      (let [poms-committed-to (:commitment day)
+            num-completed-poms (:completed day)
+            pom-in-progress? (some #{:ticking :paused} (list (:current-timer-state clock)))
+            num-incomplete-poms (- poms-committed-to num-completed-poms (when pom-in-progress? 1))]
         (dom/div nil
-                 (apply dom/div
-                        #js {:className "pomodoroMeter"}
-                        (concat  (repeatedly num-completed-poms  filled-circle)
-                                 (when pom-in-progress? (list (half-circle)))
-                                 (repeatedly num-incomplete-poms empty-circle)
-                                 )))))))
+          (apply dom/div
+                 #js {:className "pomodoroMeter"}
+                 (concat  (repeatedly num-completed-poms  filled-circle)
+                          (when pom-in-progress? (list (half-circle)))
+                          (repeatedly num-incomplete-poms empty-circle))))))))
 

@@ -42,7 +42,7 @@
                           {:name "Fredrik"}
                         :route "#timer"
                         :settings {:timer-only? :true
-                                    :pom-length 25
+                                    :pom-length 1
                                     :short-break 5
                                     :long-break 30
                                     :play-ticking-sound? :true}}}))
