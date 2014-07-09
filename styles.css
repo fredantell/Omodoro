@@ -135,60 +135,95 @@ div#intro .panel {
     background-color: rgb(225, 0, 0);
 }
 #timer-container.break .timerBtn {
-    background-color: rgb(31, 48, 65);
+    background-color: rgb(31, 48, 695);
 }
-div#pause-btn {
-  position: absolute;
-  width: 100%;
 
-  transition: opacity 200ms, z-index 200ms;
+/*Timer Buttons base styles unrelated to specific state transitions*/
+div#start-btn, div#pause-btn {
+    position: absolute;
+    width: 100%;
+}
+div#resume-btn, div#reset-btn {
+    float: left;
+    width: 49%;
+}
+.timerBtn {
+    transition: opacity 200ms, z-index 200ms;    
+    transition-timing-function: linear, step-end;
+}
+/*Timer Buttons when clock is :new*/
+.timerNew .timerBtn {
+    display: none;
+    transition: opacity 200ms, z-index 200ms;    
+    transition-timing-function: linear, step-end;
+}
+.timerNew div#start-btn {
+    display: block;
+    transition-delay: 200ms;
+    opacity: 1;
+    z-index: 10;
+}
+.timerNew div#pause-btn {
+    display: block;
+    opacity: 0;
+    z-index: -10;
+}
+/*Timer Buttons when clock is :ticking*/
+.timerTicking .timerBtn {
+}
+.timerTicking div#start-btn {
+  opacity: 0;
+  z-index: -10;
+}
+.timerTicking div#pause-btn {
   transition-delay: 200ms;
-  transition-timing-function: linear, step-end;
   opacity: 1;
   z-index: 10;
-
 }
-div#reset-btn {
-    float: left;
-    width: 49%;
-
-    transition: opacity 200ms, z-index 200ms;
-    transition-timing-function: linear, step-end;
+.timerTicking div#reset-btn, .timerTicking div#resume-btn {
     z-index: -10;
     opacity: 0;
 }
-div#resume-btn {
-    float: left;
-    width: 49%;
-
-    transition: opacity 200ms, z-index 200ms;
-    transition-timing-function: linear, step-end;
-    z-index: -10;
-    opacity: 0;
+/*Timer Buttons when clock is :paused*/
+.timerPaused .timerBtn{
+    display: block;
 }
-.timerBtnContainer.timerPaused {
-
-}
-.timerBtnContainer.timerPaused #pause-btn {
-    transition: opacity 200ms, z-index 200ms;
-    transition-timing-function: linear, step-end;
+.timerPaused #start-btn {
     opacity: 0;
     z-index: -10;
 }
-.timerBtnContainer.timerPaused #resume-btn {
-    transition: opacity 200ms, z-index 200ms;
-  transition-delay: 200ms;
-    transition-timing-function: linear, step-end;
-    z-index: 0;
-    opacity: 1;
+.timerPaused #pause-btn {
+    opacity: 0;
+    z-index: -10;
 }
-.timerBtnContainer.timerPaused #reset-btn {
-    transition: opacity 200ms, z-index 200ms;
+.timerPaused #resume-btn {
     transition-delay: 200ms;
-    transition-timing-function: linear, step-end;
     z-index: 0;
     opacity: 1;
 }
+.timerPaused #reset-btn {
+    transition-delay: 200ms;
+    z-index: 0;
+    opacity: 1;
+}
+/*Timer Buttons when clock is :finished*/
+.timerFinished .timberBtn{
+    display: none;
+}
+.timerFinished #pause-btn {
+    display: block;
+    opacity: 0;
+    z-index: -10;
+}
+.timerFinished #reset-btn {
+    display: block;
+    position: absolute;
+    width: 100%;
+    transition-delay: 200ms;
+    z-index: 0;
+    opacity: 1;
+}
+
 
 /*----------------------------------------------------------*/
 /*  Commit Widget

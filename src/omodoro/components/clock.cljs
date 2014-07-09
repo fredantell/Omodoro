@@ -116,10 +116,17 @@ If the state on the left gets clicked, it should become the state on the right."
     (dom/div #js {:style #js {:display display-task?}}
              "This is task info")))
 
-(defn pause-resume-reset-btns [app]
-  (let [classname (if (= :paused (:current-timer-state app)) "timerPaused" "")
+(defn start-pause-resume-reset-btns [app]
+  (let [cts (:current-timer-state app)
+        classname (condp = cts
+                    :new "timerNew"
+                    :ticking "timerTicking"
+                    :paused "timerPaused"
+                    :finished "timerFinished")
         change-cts-to #(om/update! app :current-timer-state %)]
     (dom/div #js {:className (str "timerBtnContainer " classname)}
+             (dom/div #js {:className "timerBtn" :id "start-btn"
+                           :onClick #(change-cts-to :ticking)} "START")
              (dom/div #js {:className "timerBtn" :id "pause-btn"
                            :onClick #(change-cts-to :paused)} "PAUSE")
              (dom/div #js {:className "timerBtn" :id "resume-btn"
@@ -138,9 +145,5 @@ If the state on the left gets clicked, it should become the state on the right."
       (dom/div nil
         (display-clock clock)
         (dom/div #js {:className "taskInfo" })
-
-        (when (and
-               (not= :finished (:current-timer-state clock))
-               (not= :new (:current-timer-state clock)))
-          (pause-resume-reset-btns clock))))))
+        (start-pause-resume-reset-btns clock)))))
 
