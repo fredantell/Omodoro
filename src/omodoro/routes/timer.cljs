@@ -8,12 +8,12 @@
             [omodoro.components.menubar :as mb]))
 
 (defn timer-styles [clock-state]
-  (let [task-id (:task-id clock-state)
-        break? (= task-id :break)
-        break-styles #js {:style
-                          #js {:background-color "rgb(48,72,95)"}}
-        work-styles #js {:style
-                         #js {:background-color "rgb(252,44,30)"}}]
+  (let [task-type (:pom-or-break clock-state)
+        break? (some #{:sbreak :lbreak} (list task-type))
+        break-styles #js {:id "timer-container"  :className "break"
+                          :style #js {:background-color "rgb(48,72,95)"}}
+        work-styles #js {:id "timer-container"  :className "work"
+                         :style #js { :background-color "rgb(252,44,30)"}}]
     (if break? break-styles work-styles)))
 
 (defn init [app owner opts]

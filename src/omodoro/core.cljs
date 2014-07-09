@@ -31,27 +31,52 @@
 
 (def state (atom {:app {:clock
                           {:seconds (* 25 60)
+                           :pom-or-break :pom ;; :pom :sbreak :lbreak
                            :current-task nil
                            :current-timer-state :new #_(:new :ticking :paused :finished)
                            :task-id nil
                            :interval nil}
                         :day
-                          {:commitment 4
-                           :completed 1}
+                          {:commitment 6
+                           :completed 1
+                           :until-break nil
+                           :history [{:pom-uuid nil
+                                      :events [{:start nil}
+                                               :paused nil
+                                               :start nil
+                                               :finished nil]
+                                      :task-id nil}]}
                         :user
                           {:name "Fredrik"}
                         :route "#timer"
                         :settings {:timer-only? :true
-                                    :pom-length 1
-                                    :short-break 5
-                                    :long-break 30
-                                    :play-ticking-sound? :true}}}))
+                                   :pom-length 25
+                                   :short-break 5
+                                   :long-break 30
+                                   :poms-in-set 4
+                                   :auto-break true
+                                   :auto-pom true
+                                   :play-ticking-sound? :true}}}))
 
-(defn set-defaults! []
-  "Set app state to user specified defaults"
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Set calculated defaults in app state
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn set-default-time! []
+  "Set seconds on clock to value in settings"
   (swap! state
          assoc-in [:app :clock :seconds]
          (* 60 (get-in @state [:app :settings :pom-length]))))
+
+(defn set-next-break! []
+  "Set :unti-break to the number of poms in a set specified in settings"
+  (swap! state
+         assoc-in [:app :day :until-break]
+         (get-in @state [:app :settings :poms-in-set])))
+
+(defn set-defaults! []
+  "Set app state to user specified defaults"
+  (set-default-time!)
+  (set-next-break!))
 
 (set-defaults!)
 

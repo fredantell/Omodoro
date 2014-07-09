@@ -18,7 +18,9 @@
     (render [_]
       (let [poms-committed-to (:commitment day)
             num-completed-poms (:completed day)
-            pom-in-progress? (some #{:ticking :paused} (list (:current-timer-state clock)))
+            pom-in-progress? (and
+                              (= :pom (:pom-or-break clock))
+                              (some #{:ticking :paused} (list (:current-timer-state clock))))
             num-incomplete-poms (- poms-committed-to num-completed-poms (when pom-in-progress? 1))]
         (dom/div nil
           (apply dom/div

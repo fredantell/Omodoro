@@ -11,22 +11,55 @@
 ;; Add ability to one off override duration of a cycle
 ;; If the pomodoro is paused for more than 3 minutes then auto reset
 
-(defn tick! [{:keys [clock settings day]}]
+(defn set-cycle-duration! [pobk {:keys [clock day settings] :as state}]
+  "Reset the clock to the appropriate amount of time according to whether you need a long break, short break, or pomodoro."
+  (let [scd! (fn [time pob-k] ;; pob-k ->> pom-or-break key from app state
+               (do
+                 (om/update! clock :seconds time)
+                 (om/update! clock :pom-or-break pob-k)))]
+    (cond
+     (= pobk :lbreak) (scd! (* 60 (:long-break @settings)) :lbreak)
+     (= pobk :sbreak) (scd! (* 60 (:short-break @settings)) :sbreak)
+     :else   (scd! (* 60 (:pom-length @settings)) :pom))))
+
+(defn do-after-pom! [{:keys [clock day] :as state}]
+  "Perform these actions post pomodoro timer and pre break timer"
+  (do
+    (om/transact! day :completed inc)
+    (om/transact! day :until-break dec)
+    (let [break-type (if (= 0 (:until-break @day)) :lbreak :sbreak)]
+      (set-cycle-duration! break-type state))
+    (om/update! clock :current-timer-state :finished)))
+
+(defn do-after-break! [{:keys [clock day settings] :as state}]
+  "Perform these actions after a break and before a pomodoro"
+  (do
+    (set-cycle-duration! :pom state)
+    (om/update! clock :current-timer-state :finished)))
+
+(defn tick! [{:keys [clock settings day] :as state}]
   (let [tick-once! (fn []
                      (when (and
                             (= :ticking (:current-timer-state @clock))
                             (< 0 (:seconds @clock)))
                        (om/transact! clock :seconds dec)))
         check-finished! (fn []
+                          "when the timer is exhausted, set the time to the duration of the next cycle"
                           (when (and
                                  (= 0 (:seconds @clock))
                                  (= :ticking (:current-timer-state @clock)))
-                              (do
-                                (om/transact! day :completed inc)
-                                (om/update! clock :current-timer-state :finished))))
+                            (let [pob (:pom-or-break @clock)
+                                  next (cond
+                                        (and (= pob :pom) (= 0 (:until-break @day))) :lbreak
+                                        (and (= pob :pom) (not= 0 (:until-break @day))) :sbreak
+                                        :else :pom)]
+                              (cond
+                               (= pob :pom) (do-after-pom! state)
+                               :else (do-after-break! state)))))
         reset-time! (fn []
                       (when (= :new (:current-timer-state @clock))
-                        (om/update! clock :seconds  (* (:pom-length @settings) 60))))
+                        (set-cycle-duration! (:pom-or-break @clock) state)
+                        #_(om/update! clock :seconds  (* (:pom-length @settings) 60))))
         
         manage-clock! (fn []
                         (do
@@ -77,12 +110,6 @@ If the state on the left gets clicked, it should become the state on the right."
                     :onClick #(om/transact! app :current-timer-state click-clock!)}
         (overlay current-timer-state)
         (str (pad minutes) ":" (pad seconds))))))
-
-(defn reset-button [app owner]
-  (dom/button #js {:onClick
-                   (fn [e]
-                     (om/update! app :seconds (* 25 60)))}
-              "reset"))
 
 (defn task-info [app]
   (let [display-task? (if (= nil (:task-id app)) "none" "block")]
