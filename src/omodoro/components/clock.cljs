@@ -57,10 +57,14 @@
                                (= pob :pom) (do-after-pom! state)
                                :else (do-after-break! state)))))
         reset-time! (fn []
-                      (when (= :new (:current-timer-state @clock))
-                        (set-cycle-duration! (:pom-or-break @clock) state)
-                        #_(om/update! clock :seconds  (* (:pom-length @settings) 60))))
-        
+                      "If the clock is set to :new this updates it with the right amount of time.  If it is :finished then it will auto start depending on user settings."
+                      (let [cts (:current-timer-state @clock)
+                            auto (:auto-start @settings)]
+                        (when (= :new cts)
+                          (set-cycle-duration! (:pom-or-break @clock) state))
+                        (when (= :finished cts)
+                          (when (some #{(:pom-or-break @clock)} (:auto-start @settings))
+                            (om/update! clock :current-timer-state :ticking)))))
         manage-clock! (fn []
                         (do
                           #_(js/console.log "managing clock!!")

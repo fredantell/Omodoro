@@ -50,11 +50,11 @@
                           {:name "Fredrik"}
                         :route "#timer"
                         :settings {:timer-only? :true
-                                   :pom-length 25
-                                   :short-break 5
-                                   :long-break 30
+                                   :pom-length 0.05
+                                   :short-break 0.1
+                                   :long-break 0.15
                                    :poms-in-set 4
-                                   :auto-break true
+                                   :auto-start #{:sbreak :lbreak :pom} ;; :sbreak :lbreak :pom
                                    :auto-pom true
                                    :play-ticking-sound? :true}}}))
 
