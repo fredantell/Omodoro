@@ -1,5 +1,12 @@
 *~
-
+\#*#
+.*
+*.jpg
+*.iml
+.repl/
+TODOs.txt
+/*.png
+/*.PNG
 /classes/
 /out/
 /target/
@@ -16,4 +23,5 @@ css/animations.css
 css/app.css
 css/font-awesome.css
 .gitignore
+/.idea/
 nodewebkit
